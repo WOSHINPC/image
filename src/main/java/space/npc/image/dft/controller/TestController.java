@@ -1,9 +1,6 @@
 package space.npc.image.dft.controller;
 
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
+import org.opencv.core.*;
 import org.opencv.highgui.Highgui;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,12 +21,12 @@ public class TestController {
     @ResponseBody
     public Object testdft() {
         DFTUtil instance = DFTUtil.getInstance();
-        Mat mat = Highgui.imread("d:/1.png");
-        Scalar scalar = new Scalar(0,255,255);
-        Point point = new Point(10,10);
-        instance.transformImageWithText(mat,"=====TEXT=====",point,0.8,scalar);
+        Mat mat = Highgui.imread("d:/temp/1.jpg");
+        Scalar scalar = new Scalar(255,255,255);
+        Point point = new Point(20,30);
+        instance.transformImageWithText(mat,"TEXT",point,0.9,scalar);
         mat = instance.antitransformImage();
-        Highgui.imwrite("d:/2.png",mat);
+        Highgui.imwrite("d:/temp/2.jpg",mat);
         return "{\"code\":0}";
     }
     @RequestMapping("/test2")
@@ -37,11 +34,32 @@ public class TestController {
     public Object test2dft() {
         DFTUtil instance = DFTUtil.getInstance();
 //        Mat mat = instance.antitransformImage();
-        Mat mat = Highgui.imread("d:/2.png");
+        Mat mat = Highgui.imread("d:/temp/2.jpg");
         mat = instance.transformImage(mat);
-        Highgui.imwrite("d:/3.png",mat);
+        Highgui.imwrite("d:/temp/3.jpg",mat);
         return "{\"code\":0}";
     }
+
+    @RequestMapping("/test3")
+    @ResponseBody
+    public Object test3() {
+//        DFTUtil instance = DFTUtil.getInstance();
+        Mat mat = Highgui.imread("d:/temp/1.jpg");
+
+        Mat temp = new Mat(50, 100, mat.type(),new Scalar(255,255,255));
+
+        Core.putText(temp, "TEXT", new Point(10, 20), Core.FONT_HERSHEY_DUPLEX, 0.5,  new Scalar(0,0,0));
+        Rect rect = new Rect(0, 0, temp.cols(), temp.rows());
+        Mat roi = new Mat(mat,rect);
+        Highgui.imwrite("d:/temp/4.jpg",roi);
+
+        temp.copyTo(roi);
+        Highgui.imwrite("d:/temp/5.jpg",mat);
+        Highgui.imwrite("d:/temp/6.jpg",temp);
+        Highgui.imwrite("d:/temp/7.jpg",roi);
+        return "{\"code\":0}";
+    }
+
 
     @PostConstruct
     private static void loadOpencv(){

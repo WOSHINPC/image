@@ -27,8 +27,8 @@ public class DFTUtil {
         if (!allPlanes.isEmpty()) {
             allPlanes.clear();
         }
-        Mat optimizeImage = optimizeImageDim(mat);
-        Core.split(optimizeImage, allPlanes);
+//        mat = optimizeImageDim(mat);
+        Core.split(mat, allPlanes);
         Mat padded = new Mat();
         if (allPlanes.size() > 1) {
             for (int i = 0; i < allPlanes.size(); i++) {
@@ -38,7 +38,7 @@ public class DFTUtil {
                 }
             }
         } else {
-            padded = optimizeImageDim(mat);
+//            padded = mat;
         }
         return padded;
     }
@@ -49,7 +49,7 @@ public class DFTUtil {
             planes.clear();
         }
         // optimize the dimension of the loaded image
-        Mat padded = this.optimizeImageDim(image);
+        Mat padded = splitSrc(image);
 
         padded.convertTo(padded, CvType.CV_32F);
         // prepare the image planes to obtain the complex image
@@ -82,10 +82,21 @@ public class DFTUtil {
         // dft
         Core.dft(complexImage, complexImage);
         // 频谱图上添加文本
+
         Core.putText(complexImage, watermarkText, point, Core.FONT_HERSHEY_DUPLEX, fontSize, scalar);
         Core.flip(complexImage, complexImage, -1);
         Core.putText(complexImage, watermarkText, point, Core.FONT_HERSHEY_DUPLEX, fontSize, scalar);
         Core.flip(complexImage, complexImage, -1);
+//
+//        Mat temp = new Mat(50, 100, complexImage.type());
+//        Core.putText(temp, "TEXT", new Point(10, 10), Core.FONT_HERSHEY_DUPLEX, 0.5, new Scalar(0, 0, 0));
+//        Rect rect = new Rect(10, 10, temp.cols(), temp.rows());
+//        Mat roi = new Mat(complexImage, rect);
+//        temp.copyTo(roi);
+//        Core.flip(complexImage, complexImage, -1);
+//        roi = new Mat(complexImage, rect);
+//        temp.copyTo(roi);
+//        Core.flip(complexImage, complexImage, -1);
 
         planes.clear();
 
@@ -96,9 +107,9 @@ public class DFTUtil {
         Core.idft(complexImage, invDFT, Core.DFT_SCALE | Core.DFT_REAL_OUTPUT, 0);
         Mat restoredImage = new Mat();
         invDFT.convertTo(restoredImage, CvType.CV_8U);
-        allPlanes.set(0,restoredImage);
+        allPlanes.set(0, restoredImage);
         Mat lastImage = new Mat();
-        Core.merge(allPlanes,lastImage);
+        Core.merge(allPlanes, lastImage);
         return lastImage;
     }
 
