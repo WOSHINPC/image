@@ -1,6 +1,7 @@
 package space.npc.image.dft.util;
 
 import org.opencv.core.*;
+import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class DFTUtil {
                 }
             }
         } else {
-//            padded = mat;
+            padded = mat;
         }
         return padded;
     }
@@ -87,21 +88,39 @@ public class DFTUtil {
         Core.flip(complexImage, complexImage, -1);
         Core.putText(complexImage, watermarkText, point, Core.FONT_HERSHEY_DUPLEX, fontSize, scalar);
         Core.flip(complexImage, complexImage, -1);
-//
-//        Mat temp = new Mat(50, 100, complexImage.type());
-//        Core.putText(temp, "TEXT", new Point(10, 10), Core.FONT_HERSHEY_DUPLEX, 0.5, new Scalar(0, 0, 0));
-//        Rect rect = new Rect(10, 10, temp.cols(), temp.rows());
-//        Mat roi = new Mat(complexImage, rect);
-//        temp.copyTo(roi);
-//        Core.flip(complexImage, complexImage, -1);
-//        roi = new Mat(complexImage, rect);
-//        temp.copyTo(roi);
-//        Core.flip(complexImage, complexImage, -1);
+
+        planes.clear();
+//        Highgui.imwrite("d:/temp/1.5.png",complexImage);
+    }
+    public void transformImageWithImage(Mat image, Mat logo, Point point, Double fontSize, Scalar scalar) {
+        // planes数组中存的通道数若开始不为空,需清空.
+        if (!planes.isEmpty()) {
+            planes.clear();
+        }
+        // optimize the dimension of the loaded image
+        //Mat padded = this.optimizeImageDim(image);
+        Mat padded = splitSrc(image);
+        padded.convertTo(padded, CvType.CV_32F);
+        // prepare the image planes to obtain the complex image
+        planes.add(padded);
+        planes.add(Mat.zeros(padded.size(), CvType.CV_32F));
+        // prepare a complex image for performing the dft
+        Core.merge(planes, complexImage);
+        // dft
+        Core.dft(complexImage, complexImage);
+        // 频谱图上添加文本
+
+        Rect rect = new Rect(0, 0, logo.cols(), logo.rows());
+        Mat roi = new Mat(complexImage,rect);
+        logo.copyTo(roi);
+        Core.flip(complexImage, complexImage, -1);
+        roi = new Mat(complexImage,rect);
+        logo.copyTo(roi);
+        Core.flip(complexImage, complexImage, -1);
 
         planes.clear();
 
     }
-
     public Mat antitransformImage() {
         Mat invDFT = new Mat();
         Core.idft(complexImage, invDFT, Core.DFT_SCALE | Core.DFT_REAL_OUTPUT, 0);
