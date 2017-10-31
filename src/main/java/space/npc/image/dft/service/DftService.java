@@ -5,12 +5,8 @@ import org.opencv.highgui.Highgui;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,7 +17,7 @@ import java.util.UUID;
  */
 @Service
 public class DftService {
-    public static final String FILE_PATH_PRE = "d:/opt/img/";
+    public static final String FILE_PATH_PRE = "/opt/img/";
 
     public byte[] saveAndTransformImage(CommonsMultipartFile image, String text) throws IOException {
         Date now = new Date();
@@ -79,7 +75,7 @@ public class DftService {
         Mat mat = Highgui.imread(filePath);
         Scalar scalar = new Scalar(255, 255, 255);
         Point point = new Point(text.length() * 10 + 10, 20);
-        mat = transformImageWithText(mat, "TEXT", point, 0.9, scalar);
+        mat = transformImageWithText(mat, text, point, 0.9, scalar);
         return mat;
     }
 

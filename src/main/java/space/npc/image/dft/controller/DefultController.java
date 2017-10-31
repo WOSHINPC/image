@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import space.npc.image.dft.service.DftService;
 
@@ -22,16 +23,23 @@ public class DefultController {
     private DftService dftService;
 
     @RequestMapping("/dft")
-    public void dft(HttpServletResponse response,@RequestParam("image") CommonsMultipartFile image) throws IOException {
-        byte[] bytes = dftService.saveAndTransformImage(image, "TEST");
+    @ResponseBody
+    public void dft(HttpServletResponse response,@RequestParam("image") CommonsMultipartFile image,String msg) throws IOException {
+        System.out.println(msg);
+        byte[] bytes = dftService.saveAndTransformImage(image, msg);
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=\"add_" + image.getOriginalFilename() + "\";");
         ServletOutputStream out = response.getOutputStream();
         out.write(bytes);
         out.close();
     }
 
     @RequestMapping("/idft")
+    @ResponseBody
     public void idft(HttpServletResponse response,@RequestParam("image") CommonsMultipartFile image) throws IOException {
         byte[] bytes = dftService.saveAndIdftImage(image);
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=\"get_" + image.getOriginalFilename() + "\";");
         ServletOutputStream out = response.getOutputStream();
         out.write(bytes);
         out.close();

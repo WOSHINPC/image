@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>图片数字盲水印</title>
+    <style>
+        .border {
+            margin: 50px auto;
+            padding: 20px;
+            width: 500px;
+            height: 500px;
+            border: 1px solid #F00;
+        }
+    </style>
+</head>
+<body>
+<div class="border">
+    <span>请选择JPG,PNG格式的图片，其他格式未尝试</span>
+    <div>
+        <br/>添加水印：<br/>
+        <form action="/dft.json" enctype="multipart/form-data" method="post">
+            <input type="file" name="image" placeholder="选择图片"/>
+            <input type="text" name="msg" placeholder="水印内容"/>
+            <button type="submit">提交</button>
+        </form>
+    </div>
+    <div>
+        <br/>提取水印：<br/>
+        <form action="/idft.json" enctype="multipart/form-data" method="post">
+            <input type="file" name="image" placeholder="选择图片"/>
+            <button type="submit">提交</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
