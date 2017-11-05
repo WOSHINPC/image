@@ -8,14 +8,21 @@
             margin: 50px auto;
             padding: 20px;
             width: 500px;
-            height: 500px;
+            height: 200px;
             border: 1px solid #F00;
+        }
+        .explain{
+            margin: 50px auto;
+            padding: 20px;
+            width: 1000px;
+            height: 750px;
+            border: 1px solid gray;
         }
     </style>
 </head>
 <body>
 <div class="border">
-    <span>请选择JPG,PNG格式的图片，其他格式未尝试</span>
+    <span>不支持中文<br/>请选择JPG、PNG格式的图片，其他格式未尝试。<br/>图片大小4M以内</span>
     <div>
         <br/>添加水印：<br/>
         <form action="/dft.json" enctype="multipart/form-data" method="post">
@@ -31,6 +38,12 @@
             <button type="submit">提交</button>
         </form>
     </div>
+</div>
+<div class="explain">
+    添加水印内容【npc.space】：<br/><br/>
+    提交：<img src="/img/1.png" style="width: 400px">得到：<img src="/img/2.png" style="width: 400px">
+    ↓提取获得<br/><br/>
+    <div style="float: right"><img src="/img/3.png" style="width: 600px"></div>
 </div>
 </body>
 </html>

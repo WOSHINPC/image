@@ -74,8 +74,8 @@ public class DftService {
     public Mat dft(String filePath, String text) {
         Mat mat = Highgui.imread(filePath);
         Scalar scalar = new Scalar(255, 255, 255);
-        Point point = new Point(text.length() * 10 + 10, 20);
-        mat = transformImageWithText(mat, text, point, 0.9, scalar);
+        Point point = new Point(40, 40);
+        mat = transformImageWithText(mat, text, point, 1D, scalar);
         return mat;
     }
 

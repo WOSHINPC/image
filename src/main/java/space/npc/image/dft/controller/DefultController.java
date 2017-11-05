@@ -28,7 +28,7 @@ public class DefultController {
         System.out.println(msg);
         byte[] bytes = dftService.saveAndTransformImage(image, msg);
         response.setContentType("application/octet-stream");
-        response.setHeader("Content-Disposition", "attachment; filename=\"add_" + image.getOriginalFilename() + "\";");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + image.getOriginalFilename() + "\";");
         ServletOutputStream out = response.getOutputStream();
         out.write(bytes);
         out.close();
@@ -39,7 +39,7 @@ public class DefultController {
     public void idft(HttpServletResponse response,@RequestParam("image") CommonsMultipartFile image) throws IOException {
         byte[] bytes = dftService.saveAndIdftImage(image);
         response.setContentType("application/octet-stream");
-        response.setHeader("Content-Disposition", "attachment; filename=\"get_" + image.getOriginalFilename() + "\";");
+        response.setHeader("Content-Disposition", "attachment; filename=\"npc_" + image.getOriginalFilename() + "\";");
         ServletOutputStream out = response.getOutputStream();
         out.write(bytes);
         out.close();
