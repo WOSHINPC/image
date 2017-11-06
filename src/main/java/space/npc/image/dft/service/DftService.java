@@ -5,8 +5,10 @@ import org.opencv.highgui.Highgui;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,7 +33,7 @@ public class DftService {
         if (!file.exists()) {
             file.mkdirs();
         }
-        file = new File(path+ newFileName);
+        file = new File(path + newFileName);
         image.transferTo(file);
         Mat mat = dft(path + newFileName, text);
         String dftImagePath = filePath + "/2/";
@@ -44,6 +46,7 @@ public class DftService {
         Highgui.imencode("." + fileExtension, mat, mob);
         return mob.toArray();
     }
+
     public byte[] saveAndIdftImage(CommonsMultipartFile image) throws IOException {
         Date now = new Date();
         String filePath = FILE_PATH_PRE + (now.getYear() + 1900) + "/" + (now.getMonth() + 1) + "/" + now.getDate() + "/" + now.getHours() + "/";
@@ -56,7 +59,7 @@ public class DftService {
         if (!file.exists()) {
             file.mkdirs();
         }
-        file = new File(path+ newFileName);
+        file = new File(path + newFileName);
         image.transferTo(file);
         Mat mat = idft(path + newFileName);
         String dftImagePath = filePath + "/4/";
@@ -110,7 +113,7 @@ public class DftService {
     }
 
     private Mat splitSrc(Mat mat, List<Mat> allPlanes) {
-        if (allPlanes == null){
+        if (allPlanes == null) {
             allPlanes = new ArrayList<>();
         }
 //        mat = optimizeImageDim(mat);
@@ -143,7 +146,7 @@ public class DftService {
         List<Mat> planes = new ArrayList<>();
         Mat complexImage = new Mat();
         // optimize the dimension of the loaded image
-        Mat padded = splitSrc(image,null);
+        Mat padded = splitSrc(image, null);
 
         padded.convertTo(padded, CvType.CV_32F);
         // prepare the image planes to obtain the complex image
@@ -213,5 +216,50 @@ public class DftService {
         q1.copyTo(tmp);
         q2.copyTo(q1);
         tmp.copyTo(q2);
+    }
+
+
+    @PostConstruct
+    private static void loadOpencv() throws Exception {
+        System.out.println("######## 开始加载 Opencv ########");
+        //获取存放dll文件的绝对路径
+        String path = System.getProperty("web.root");
+        System.out.println("######## 路径为 : " + path + " ########");
+        //将此目录添加到系统环境变量中
+        addDirToPath(path);
+        //加载相应的dll文件，注意要将'\'替换为'/'
+        String os = System.getProperty("os.name");
+        if (os.toLowerCase().startsWith("win")) {
+            System.load(path.replaceAll("\\\\", "/") + "/opencv_java2413.dll");
+        } else if (os.toLowerCase().startsWith("linux")) {
+            System.load(path.replaceAll("\\\\", "/") + "/libopencv_java2413.so");
+        } else {
+            System.out.println("os:" + os);
+            throw new Exception("系统错误，无法加载opencv");
+        }
+
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        System.out.println("######## Opencv加载完毕 ########");
+    }
+
+    private static void addDirToPath(String s) {
+        try {
+            //获取系统path变量对象
+            Field field = ClassLoader.class.getDeclaredField("sys_paths");
+            //设置此变量对象可访问
+            field.setAccessible(true);
+            //获取此变量对象的值
+            String[] path = (String[]) field.get(null);
+            //创建字符串数组，在原来的数组长度上增加一个，用于存放增加的目录
+            String[] tem = new String[path.length + 1];
+            //将原来的path变量复制到tem中
+            System.arraycopy(path, 0, tem, 0, path.length);
+            //将增加的目录存入新的变量数组中
+            tem[path.length] = s;
+            //将增加目录后的数组赋给path变量对象
+            field.set(null, tem);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
